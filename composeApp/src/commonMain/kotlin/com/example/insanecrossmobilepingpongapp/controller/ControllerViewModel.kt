@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
@@ -42,10 +41,7 @@ class ControllerViewModel(
     init {
         Log.i(TAG, "🎮 ControllerViewModel initializing...")
         Log.i(TAG, "📡 Motion sensor available: ${motionSensor.isAvailable()}")
-        Log.i(TAG, "⚙️ Swing detection config: threshold=%.2f, minInterval=%dms".format(
-            SwingDetectionConfig.SWING_SPEED_THRESHOLD,
-            SwingDetectionConfig.SWING_MIN_INTERVAL_MS
-        ))
+        Log.i(TAG, "⚙️ Swing detection config: threshold=${SwingDetectionConfig.SWING_SPEED_THRESHOLD}, minInterval=${SwingDetectionConfig.SWING_MIN_INTERVAL_MS}ms")
 
         // Observe WebSocket connection state
         viewModelScope.launch {
@@ -91,141 +87,133 @@ class ControllerViewModel(
         // Periodic logging of motion data (not too spammy)
         processCount++
         if (processCount % logEveryNProcesses == 0) {
-            Log.d(TAG, "📊 Motion → pitch: %.1f°, roll: %.1f°, accelMag: %.2f m/s²".format(
-                Math.toDegrees(calibratedOrientation.pitch.toDouble()),
-                Math.toDegrees(calibratedOrientation.roll.toDouble()),
-                kotlin.math.sqrt(
-                    calibratedOrientation.accelerationX * calibratedOrientation.accelerationX +
-                    calibratedOrientation.accelerationY * calibratedOrientation.accelerationY +
-                    calibratedOrientation.accelerationZ * calibratedOrientation.accelerationZ
-                )
-            ))
-            Log.d(TAG, "🎯 Control → tiltX: %.2f, tiltY: %.2f, intensity: %.2f, swingSpeed: %.2f".format(
-                paddleControl.tiltX, paddleControl.tiltY, paddleControl.intensity, paddleControl.swingSpeed
-            ))
-        }
-
-        // ALWAYS update UI state (continuous)
-        _state.update { currentState ->
-            currentState.copy(currentControl = paddleControl)
-        }
-
-        // ✨ EVENT-BASED SENDING: Only send over WebSocket when swing is detected
-        val currentTime = getCurrentTimeMillis()
-        if (swingDetector.detectSwing(paddleControl, currentTime)) {
-            // Swing detected! Send minimal swing event with just speed
-            webSocketClient.sendSwingEvent(paddleControl.swingSpeed)
-        }
-
-        // Store for next smoothing iteration
-        lastOrientation = smoothedOrientation
+            Log.d(TAG, "📊 Motion → pitch: ${toDegrees(calibratedOrientation.pitch.toDouble())}°, roll: ${toDegrees(calibratedOrientation.roll.toDouble())}°, accelMag: ${
+            kotlin.math.sqrt(
+                calibratedOrientation.accelerationX * calibratedOrientation.accelerationX +
+                calibratedOrientation.accelerationY * calibratedOrientation.accelerationY +
+                calibratedOrientation.accelerationZ * calibratedOrientation.accelerationZ
+            )
+        } m/s²")
+        Log.d(TAG, "🎯 Control → tiltX: ${paddleControl.tiltX}, tiltY: ${paddleControl.tiltY}, intensity: ${paddleControl.intensity}, swingSpeed: ${paddleControl.swingSpeed}")
     }
 
-    /**
-     * Get current time in milliseconds (platform-agnostic).
-     */
-    private fun getCurrentTimeMillis(): Long {
-        return Clock.System.now().toEpochMilliseconds()
+    // ALWAYS update UI state (continuous)
+    _state.update { currentState ->
+        currentState.copy(currentControl = paddleControl)
     }
 
-    /**
-     * Apply exponential smoothing to orientation and acceleration data.
-     */
-    private fun smoothOrientation(raw: DeviceOrientation): DeviceOrientation {
-        return DeviceOrientation(
-            pitch = smoothingFactor * lastOrientation.pitch + (1 - smoothingFactor) * raw.pitch,
-            roll = smoothingFactor * lastOrientation.roll + (1 - smoothingFactor) * raw.roll,
-            yaw = smoothingFactor * lastOrientation.yaw + (1 - smoothingFactor) * raw.yaw,
-            accelerationX = accelSmoothingFactor * lastOrientation.accelerationX + (1 - accelSmoothingFactor) * raw.accelerationX,
-            accelerationY = accelSmoothingFactor * lastOrientation.accelerationY + (1 - accelSmoothingFactor) * raw.accelerationY,
-            accelerationZ = accelSmoothingFactor * lastOrientation.accelerationZ + (1 - accelSmoothingFactor) * raw.accelerationZ
-        )
+    // ✨ EVENT-BASED SENDING: Only send over WebSocket when swing is detected
+    val currentTime = getCurrentTimeMillis()
+    if (swingDetector.detectSwing(paddleControl, currentTime)) {
+        // Swing detected! Send minimal swing event with just speed
+        webSocketClient.sendSwingEvent(paddleControl.swingSpeed)
     }
 
-    /**
-     * Apply calibration offset to orientation.
-     */
-    private fun applyCalibration(orientation: DeviceOrientation): DeviceOrientation {
-        val offset = _state.value.calibrationOffset
-        return DeviceOrientation(
-            pitch = orientation.pitch - offset.pitch,
-            roll = orientation.roll - offset.roll,
-            yaw = orientation.yaw - offset.yaw,
-            accelerationX = orientation.accelerationX,
-            accelerationY = orientation.accelerationY,
-            accelerationZ = orientation.accelerationZ
-        )
+    // Store for next smoothing iteration
+    lastOrientation = smoothedOrientation
+}
+
+/**
+ * Get current time in milliseconds (platform-agnostic).
+ */
+private fun getCurrentTimeMillis(): Long {
+    return com.example.insanecrossmobilepingpongapp.util.getCurrentTimeMillis()
+}
+
+/**
+ * Apply exponential smoothing to orientation and acceleration data.
+ */
+private fun smoothOrientation(raw: DeviceOrientation): DeviceOrientation {
+    return DeviceOrientation(
+        pitch = smoothingFactor * lastOrientation.pitch + (1 - smoothingFactor) * raw.pitch,
+        roll = smoothingFactor * lastOrientation.roll + (1 - smoothingFactor) * raw.roll,
+        yaw = smoothingFactor * lastOrientation.yaw + (1 - smoothingFactor) * raw.yaw,
+        accelerationX = accelSmoothingFactor * lastOrientation.accelerationX + (1 - accelSmoothingFactor) * raw.accelerationX,
+        accelerationY = accelSmoothingFactor * lastOrientation.accelerationY + (1 - accelSmoothingFactor) * raw.accelerationY,
+        accelerationZ = accelSmoothingFactor * lastOrientation.accelerationZ + (1 - accelSmoothingFactor) * raw.accelerationZ
+    )
+}
+
+/**
+ * Apply calibration offset to orientation.
+ */
+private fun applyCalibration(orientation: DeviceOrientation): DeviceOrientation {
+    val offset = _state.value.calibrationOffset
+    return DeviceOrientation(
+        pitch = orientation.pitch - offset.pitch,
+        roll = orientation.roll - offset.roll,
+        yaw = orientation.yaw - offset.yaw,
+        accelerationX = orientation.accelerationX,
+        accelerationY = orientation.accelerationY,
+        accelerationZ = orientation.accelerationZ
+    )
+}
+
+/**
+ * Map device orientation and acceleration to normalized paddle control values.
+ *
+ * Mapping strategy:
+ * - Roll (left/right tilt) -> tiltX
+ * - Pitch (forward/back tilt) -> tiltY
+ * - Intensity based on total tilt magnitude
+ * - Acceleration magnitude -> swingSpeed (like swinging a ping pong racket)
+ * - Acceleration direction -> swingDirectionX/Y
+ */
+private fun mapToPaddleControl(orientation: DeviceOrientation): PaddleControl {
+    // Maximum tilt angles in radians (about ±45 degrees)
+    val maxTiltAngle = kotlin.math.PI.toFloat() / 4
+
+    // Map roll to tiltX (left/right)
+    val tiltX = (orientation.roll / maxTiltAngle).coerceIn(-1f, 1f)
+
+    // Map pitch to tiltY (forward/backward)
+    val tiltY = (orientation.pitch / maxTiltAngle).coerceIn(-1f, 1f)
+
+    // Calculate intensity based on total tilt magnitude
+    val tiltMagnitude = sqrt(tiltX * tiltX + tiltY * tiltY)
+    val intensity = tiltMagnitude.coerceIn(0f, 1f)
+
+    // Calculate swing speed from acceleration magnitude
+    // Typical phone swing for ping pong: 0-20 m/s²
+    val accelMagnitude = sqrt(
+        orientation.accelerationX * orientation.accelerationX +
+        orientation.accelerationY * orientation.accelerationY +
+        orientation.accelerationZ * orientation.accelerationZ
+    )
+    val maxAcceleration = 20f // m/s² - adjust based on testing
+    val swingSpeed = (accelMagnitude / maxAcceleration).coerceIn(0f, 1f)
+
+    // Calculate swing direction (normalized X and Y components)
+    val swingDirectionX = if (accelMagnitude > 0.5f) {
+        (orientation.accelerationX / accelMagnitude).coerceIn(-1f, 1f)
+    } else {
+        0f
     }
 
-    /**
-     * Map device orientation and acceleration to normalized paddle control values.
-     *
-     * Mapping strategy:
-     * - Roll (left/right tilt) -> tiltX
-     * - Pitch (forward/back tilt) -> tiltY
-     * - Intensity based on total tilt magnitude
-     * - Acceleration magnitude -> swingSpeed (like swinging a ping pong racket)
-     * - Acceleration direction -> swingDirectionX/Y
-     */
-    private fun mapToPaddleControl(orientation: DeviceOrientation): PaddleControl {
-        // Maximum tilt angles in radians (about ±45 degrees)
-        val maxTiltAngle = Math.PI.toFloat() / 4
-
-        // Map roll to tiltX (left/right)
-        val tiltX = (orientation.roll / maxTiltAngle).coerceIn(-1f, 1f)
-
-        // Map pitch to tiltY (forward/backward)
-        val tiltY = (orientation.pitch / maxTiltAngle).coerceIn(-1f, 1f)
-
-        // Calculate intensity based on total tilt magnitude
-        val tiltMagnitude = sqrt(tiltX * tiltX + tiltY * tiltY)
-        val intensity = tiltMagnitude.coerceIn(0f, 1f)
-
-        // Calculate swing speed from acceleration magnitude
-        // Typical phone swing for ping pong: 0-20 m/s²
-        val accelMagnitude = sqrt(
-            orientation.accelerationX * orientation.accelerationX +
-            orientation.accelerationY * orientation.accelerationY +
-            orientation.accelerationZ * orientation.accelerationZ
-        )
-        val maxAcceleration = 20f // m/s² - adjust based on testing
-        val swingSpeed = (accelMagnitude / maxAcceleration).coerceIn(0f, 1f)
-
-        // Calculate swing direction (normalized X and Y components)
-        val swingDirectionX = if (accelMagnitude > 0.5f) {
-            (orientation.accelerationX / accelMagnitude).coerceIn(-1f, 1f)
-        } else {
-            0f
-        }
-
-        val swingDirectionY = if (accelMagnitude > 0.5f) {
-            (orientation.accelerationY / accelMagnitude).coerceIn(-1f, 1f)
-        } else {
-            0f
-        }
-
-        return PaddleControl(
-            tiltX = tiltX,
-            tiltY = tiltY,
-            intensity = intensity,
-            swingSpeed = swingSpeed,
-            swingDirectionX = swingDirectionX,
-            swingDirectionY = swingDirectionY
-        )
+    val swingDirectionY = if (accelMagnitude > 0.5f) {
+        (orientation.accelerationY / accelMagnitude).coerceIn(-1f, 1f)
+    } else {
+        0f
     }
 
-    /**
-     * Calibrate the controller using current orientation as neutral position.
-     */
-    fun calibrate() {
-        val currentOrientation = lastOrientation
-        Log.i(TAG, "🎚️ Calibrating controller...")
-        Log.d(TAG, "📐 Calibration offset → pitch: %.3f°, roll: %.3f°, yaw: %.3f°".format(
-            Math.toDegrees(currentOrientation.pitch.toDouble()),
-            Math.toDegrees(currentOrientation.roll.toDouble()),
-            Math.toDegrees(currentOrientation.yaw.toDouble())
-        ))
-        _state.update { currentState ->
+    return PaddleControl(
+        tiltX = tiltX,
+        tiltY = tiltY,
+        intensity = intensity,
+        swingSpeed = swingSpeed,
+        swingDirectionX = swingDirectionX,
+        swingDirectionY = swingDirectionY
+    )
+}
+
+/**
+ * Calibrate the controller using current orientation as neutral position.
+ */
+fun calibrate() {
+    val currentOrientation = lastOrientation
+    Log.i(TAG, "🎚️ Calibrating controller...")
+    Log.d(TAG, "📐 Calibration offset → pitch: ${toDegrees(currentOrientation.pitch.toDouble())}°, roll: ${toDegrees(currentOrientation.roll.toDouble())}°, yaw: ${toDegrees(currentOrientation.yaw.toDouble())}°")
+    _state.update { currentState ->
             currentState.copy(
                 calibrationOffset = currentOrientation,
                 isCalibrated = true
@@ -288,5 +276,9 @@ class ControllerViewModel(
 
     companion object {
         private const val TAG = "ControllerViewModel"
+    }
+
+    private fun toDegrees(radians: Double): Double {
+        return radians * 180.0 / kotlin.math.PI
     }
 }

@@ -53,9 +53,7 @@ class SwingDetector {
 
             // Log candidate movement below threshold
             if (consecutiveHighSpeedCount == 1) {
-                Log.d(TAG, "🔍 Swing candidate – speed=%.2f (>= %.2f), confirming...".format(
-                    control.swingSpeed, SwingDetectionConfig.SWING_SPEED_THRESHOLD
-                ))
+                Log.d(TAG, "🔍 Swing candidate – speed=${control.swingSpeed} (>= ${SwingDetectionConfig.SWING_SPEED_THRESHOLD}), confirming...")
             }
 
             // Require multiple consecutive frames to confirm (reduces noise)
@@ -64,21 +62,14 @@ class SwingDetector {
                 lastSwingTimestamp = currentTimeMs
                 consecutiveHighSpeedCount = 0
 
-                Log.i(TAG, "🏓 Swing detected! speed=%.2f dirX=%.2f dirY=%.2f intensity=%.2f".format(
-                    control.swingSpeed,
-                    control.swingDirectionX,
-                    control.swingDirectionY,
-                    control.intensity
-                ))
+                Log.i(TAG, "🏓 Swing detected! speed=${control.swingSpeed} dirX=${control.swingDirectionX} dirY=${control.swingDirectionY} intensity=${control.intensity}")
 
                 return true
             }
         } else {
             // Speed below threshold
             if (consecutiveHighSpeedCount > 0) {
-                Log.d(TAG, "💤 No swing – speed=%.2f (< %.2f), resetting counter".format(
-                    control.swingSpeed, SwingDetectionConfig.SWING_SPEED_THRESHOLD
-                ))
+                Log.d(TAG, "💤 No swing – speed=${control.swingSpeed} (< ${SwingDetectionConfig.SWING_SPEED_THRESHOLD}), resetting counter")
             }
             consecutiveHighSpeedCount = 0
         }

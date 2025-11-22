@@ -483,7 +483,7 @@ private fun ValueRow(label: String, value: Float) {
             )
             // Numeric value
             Text(
-                text = String.format("%+.2f", value),
+                text = formatFloat(value),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -491,4 +491,9 @@ private fun ValueRow(label: String, value: Float) {
             )
         }
     }
+}
+
+private fun formatFloat(value: Float): String {
+    val rounded = (value * 100).toInt() / 100.0
+    return if (rounded >= 0) "+$rounded" else "$rounded"
 }

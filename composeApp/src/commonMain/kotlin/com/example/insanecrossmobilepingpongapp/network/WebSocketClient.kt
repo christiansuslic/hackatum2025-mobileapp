@@ -123,7 +123,7 @@ class WebSocketClient {
                 currentSession.send(Frame.Text(json))
 
                 // Log the swing send event
-                Log.i(TAG, "🏓 Sending swing event → speed=%.2f".format(swingSpeed))
+                Log.i(TAG, "🏓 Sending swing event → speed=$swingSpeed")
                 Log.d(TAG, "📦 Payload: $json")
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Failed to send swing event: ${e.message}", e)

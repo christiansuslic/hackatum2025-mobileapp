@@ -5,10 +5,14 @@ import com.example.insanecrossmobilepingpongapp.util.Log
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.useContents
 import platform.CoreMotion.CMMotionManager
 import platform.Foundation.NSOperationQueue
 import kotlin.math.sqrt
+import kotlin.math.PI
 
+@OptIn(ExperimentalForeignApi::class)
 class IosMotionSensor : MotionSensor {
     private val motionManager = CMMotionManager()
     private var updateCount = 0
@@ -43,35 +47,31 @@ class IosMotionSensor : MotionSensor {
                 // CMDeviceMotion also provides userAcceleration (excludes gravity)
                 val accel = it.userAcceleration
 
-                val deviceOrientation = DeviceOrientation(
-                    pitch = attitude.pitch.toFloat(),
-                    roll = attitude.roll.toFloat(),
-                    yaw = attitude.yaw.toFloat(),
-                    accelerationX = accel.x.toFloat(),
-                    accelerationY = accel.y.toFloat(),
-                    accelerationZ = accel.z.toFloat()
-                )
+                accel.useContents {
+                    val deviceOrientation = DeviceOrientation(
+                        pitch = attitude.pitch.toFloat(),
+                        roll = attitude.roll.toFloat(),
+                        yaw = attitude.yaw.toFloat(),
+                        accelerationX = x.toFloat(),
+                        accelerationY = y.toFloat(),
+                        accelerationZ = z.toFloat()
+                    )
 
-                // Periodic detailed logging
-                updateCount++
-                if (updateCount % logEveryNUpdates == 0) {
-                    val accelMagnitude = sqrt(
-                        accel.x * accel.x +
-                        accel.y * accel.y +
-                        accel.z * accel.z
-                    ).toFloat()
+                    // Periodic detailed logging
+                    updateCount++
+                    if (updateCount % logEveryNUpdates == 0) {
+                        val accelMagnitude = sqrt(
+                            x * x +
+                            y * y +
+                            z * z
+                        ).toFloat()
 
-                    Log.d(TAG, "📊 Orientation → pitch: %.3f, roll: %.3f, yaw: %.3f".format(
-                        Math.toDegrees(attitude.pitch),
-                        Math.toDegrees(attitude.roll),
-                        Math.toDegrees(attitude.yaw)
-                    ))
-                    Log.d(TAG, "🚀 Acceleration → X: %.2f, Y: %.2f, Z: %.2f, |mag|: %.2f m/s²".format(
-                        accel.x, accel.y, accel.z, accelMagnitude
-                    ))
+                        Log.d(TAG, "📊 Orientation → pitch: ${toDegrees(attitude.pitch)}, roll: ${toDegrees(attitude.roll)}, yaw: ${toDegrees(attitude.yaw)}")
+                        Log.d(TAG, "🚀 Acceleration → X: $x, Y: $y, Z: $z, |mag|: $accelMagnitude m/s²")
+                    }
+
+                    trySend(deviceOrientation)
                 }
-
-                trySend(deviceOrientation)
             }
         }
 
@@ -100,6 +100,10 @@ class IosMotionSensor : MotionSensor {
 
     companion object {
         private const val TAG = "IosMotionSensor"
+    }
+
+    private fun toDegrees(radians: Double): Double {
+        return radians * 180.0 / PI
     }
 }
 
