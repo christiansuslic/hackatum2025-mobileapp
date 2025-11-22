@@ -118,7 +118,7 @@ fun GameScreen(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Trennen",
+                text = "Disconnect",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -142,10 +142,10 @@ private fun ConnectionStatusBadge(
     modifier: Modifier = Modifier
 ) {
     val (statusText, statusColor) = when (connectionState) {
-        ConnectionState.CONNECTED -> "Verbunden" to Color(0xFF06D6A0)
-        ConnectionState.CONNECTING -> "Verbindet..." to Color(0xFFFFA500)
-        ConnectionState.DISCONNECTED -> "Getrennt" to Color(0xFF888888)
-        ConnectionState.ERROR -> "Fehler" to Color(0xFFE63946)
+        ConnectionState.CONNECTED -> "Connected" to Color(0xFF06D6A0)
+        ConnectionState.CONNECTING -> "Connecting..." to Color(0xFFFFA500)
+        ConnectionState.DISCONNECTED -> "Disconnected" to Color(0xFF888888)
+        ConnectionState.ERROR -> "Error" to Color(0xFFE63946)
     }
 
     Card(

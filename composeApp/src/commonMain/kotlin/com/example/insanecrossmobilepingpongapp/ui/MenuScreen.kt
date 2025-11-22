@@ -59,7 +59,7 @@ fun MenuScreen(
                 )
                 
                 Text(
-                    text = "Wähle deinen Spieler",
+                    text = "Choose your player",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                         color = Color(0xFFBBBBBB)
@@ -77,14 +77,14 @@ fun MenuScreen(
             ) {
                 // Player 1 Button (Red)
                 PlayerButton(
-                    text = "Spieler 1 (Unten)",
+                    text = "Player 1 (Bottom)",
                     color = Color(0xFFE63946),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER1) }
                 )
 
                 // Player 2 Button (Green)
                 PlayerButton(
-                    text = "Spieler 2 (Oben)",
+                    text = "Player 2 (Top)",
                     color = Color(0xFF06D6A0),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER2) }
                 )
@@ -94,7 +94,7 @@ fun MenuScreen(
 
             // Info Text
             Text(
-                text = "Hinweis: Das Spiel startet automatisch,\nsobald beide Spieler verbunden sind.",
+                text = "Note: The game starts automatically\nonce both players are connected.",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = Color(0xFF888888),
                     fontSize = 14.sp
