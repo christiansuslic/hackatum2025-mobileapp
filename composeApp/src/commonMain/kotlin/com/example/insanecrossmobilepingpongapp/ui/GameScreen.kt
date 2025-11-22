@@ -46,23 +46,11 @@ fun GameScreen(
                 )
             )
     ) {
-        // Main Content - Racket Display
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        // Main Content - Racket Display (centered)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            // Connection Status Indicator
-            ConnectionStatusBadge(
-                connectionState = connectionState,
-                playerRole = playerRole
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Racket Image
             RacketDisplay(
                 playerRole = playerRole,
                 modifier = Modifier
@@ -70,6 +58,15 @@ fun GameScreen(
                     .aspectRatio(1f)
             )
         }
+
+        // Top-Left Connection Badge
+        ConnectionStatusBadge(
+            connectionState = connectionState,
+            playerRole = playerRole,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+        )
 
         // Top-Right Controls
         Row(
