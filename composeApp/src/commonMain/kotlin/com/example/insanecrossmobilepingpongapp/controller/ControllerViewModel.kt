@@ -180,7 +180,7 @@ private fun mapToPaddleControl(orientation: DeviceOrientation): PaddleControl {
         orientation.accelerationY * orientation.accelerationY +
         orientation.accelerationZ * orientation.accelerationZ
     )
-    val maxAcceleration = 20f // m/s² - adjust based on testing
+    val maxAcceleration = 5f // m/s² - Lowered from 20f to increase sensitivity
     val swingSpeed = (accelMagnitude / maxAcceleration).coerceIn(0f, 1f)
 
     // Calculate swing direction (normalized X and Y components)
