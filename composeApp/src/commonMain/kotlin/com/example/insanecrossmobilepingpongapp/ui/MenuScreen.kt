@@ -77,14 +77,14 @@ fun MenuScreen(
             ) {
                 // Player 1 Button (Red)
                 PlayerButton(
-                    text = "Player 1 (Bottom)",
+                    text = "Player 1",
                     color = Color(0xFFE63946),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER1) }
                 )
 
                 // Player 2 Button (Green)
                 PlayerButton(
-                    text = "Player 2 (Top)",
+                    text = "Player 2",
                     color = Color(0xFF06D6A0),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER2) }
                 )
