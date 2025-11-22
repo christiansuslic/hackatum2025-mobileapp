@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+    
+    <!-- Black paddle face -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M100,20 A80,80 0 1,1 100,180 A80,80 0 1,1 100,20 Z"/>
+    
+    <!-- Red outer ring -->
+    <path
+        android:fillColor="#E63946"
+        android:strokeWidth="8"
+        android:strokeColor="#E63946"
+        android:pathData="M100,20 A80,80 0 1,1 100,180 A80,80 0 1,1 100,20 Z"
+        android:fillType="evenOdd"/>
+    
+    <!-- Handle -->
+    <path
+        android:fillColor="#8B4513"
+        android:pathData="M85,160 L115,160 L110,200 L90,200 Z"/>
+    
+    <!-- Center dot -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,100 A5,5 0 1,1 100,110 A5,5 0 1,1 100,100 Z"/>
+</vector>

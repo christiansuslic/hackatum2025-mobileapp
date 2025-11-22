@@ -279,6 +279,46 @@ class ControllerViewModel(
         _state.update { it.copy(token = token) }
     }
 
+    /**
+     * Select player role and navigate to game screen.
+     * Automatically connects to the server with the appropriate token.
+     */
+    fun selectPlayer(role: com.example.insanecrossmobilepingpongapp.model.PlayerRole) {
+        Log.i(TAG, "👤 Player selected: ${role.displayName}")
+        _state.update {
+            it.copy(
+                playerRole = role,
+                token = role.token,
+                currentScreen = com.example.insanecrossmobilepingpongapp.model.Screen.Game
+            )
+        }
+        // Auto-connect to server with player's token
+        connect(_state.value.serverUrl, role.token)
+    }
+
+    /**
+     * Toggle debug overlay visibility.
+     */
+    fun toggleDebug() {
+        _state.update { it.copy(isDebugVisible = !it.isDebugVisible) }
+        Log.d(TAG, "🐛 Debug overlay: ${_state.value.isDebugVisible}")
+    }
+
+    /**
+     * Disconnect and return to menu screen.
+     */
+    fun disconnectAndReturnToMenu() {
+        Log.i(TAG, "🏠 Returning to menu...")
+        disconnect()
+        _state.update {
+            it.copy(
+                currentScreen = com.example.insanecrossmobilepingpongapp.model.Screen.Menu,
+                playerRole = null,
+                isDebugVisible = false
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         Log.i(TAG, "🛑 ViewModel clearing - stopping motion sensor and WebSocket")
