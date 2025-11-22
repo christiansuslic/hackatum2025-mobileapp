@@ -50,6 +50,7 @@ fun App(
                                 isCalibrated = state.isCalibrated,
                                 isActive = state.isActive,
                                 paddleControl = state.currentControl,
+                                onCalibrate = { viewModel.calibrate() },
                                 onClose = { viewModel.toggleDebug() }
                             )
                         }

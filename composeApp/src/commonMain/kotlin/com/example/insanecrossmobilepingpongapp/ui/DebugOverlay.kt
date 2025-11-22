@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.insanecrossmobilepingpongapp.model.PaddleControl
 import com.example.insanecrossmobilepingpongapp.network.ConnectionState
+import com.example.insanecrossmobilepingpongapp.util.formatFloat
 import kotlin.math.abs
 
 /**
@@ -28,6 +29,7 @@ fun DebugOverlay(
     isCalibrated: Boolean,
     isActive: Boolean,
     paddleControl: PaddleControl,
+    onCalibrate: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -115,6 +117,23 @@ fun DebugOverlay(
                         swingDirectionX = paddleControl.swingDirectionX,
                         swingDirectionY = paddleControl.swingDirectionY
                     )
+
+                    // Calibration Button
+                    Button(
+                        onClick = onCalibrate,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2196F3)
+                        )
+                    ) {
+                        Text(
+                            text = if (isCalibrated) "Recalibrate Sensor" else "Calibrate Sensor",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
@@ -310,7 +329,7 @@ private fun DebugValueRow(label: String, value: Float) {
             )
             // Numeric value
             Text(
-                text = String.format("%+.2f", value),
+                text = formatFloat(value, 2),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White,
