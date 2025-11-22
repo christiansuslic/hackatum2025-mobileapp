@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -34,6 +35,12 @@ fun GameScreen(
     debugContent: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Determine racket resource based on player role
+    val racketResource = when (playerRole) {
+        PlayerRole.PLAYER1 -> Res.drawable.racket_red
+        PlayerRole.PLAYER2 -> Res.drawable.racket_black
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -46,18 +53,15 @@ fun GameScreen(
                 )
             )
     ) {
-        // Main Content - Racket Display (centered)
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            RacketDisplay(
-                playerRole = playerRole,
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .aspectRatio(1f)
-            )
-        }
+        Image(
+            painter = painterResource(racketResource),
+            contentDescription = "Background Racket",
+            modifier = Modifier
+                .fillMaxSize()
+                .scale(1.7f) //scale manually to fit size
+                .align(Alignment.Center),
+            contentScale = ContentScale.Fit
+        )
 
         // Top-Left Connection Badge
         ConnectionStatusBadge(
@@ -66,13 +70,15 @@ fun GameScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
+                .statusBarsPadding() // Add padding for status bar
         )
 
         // Top-Right Controls
         Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(16.dp),
+                .padding(16.dp)
+                .statusBarsPadding(), // Add padding for status bar
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Debug Toggle Button
@@ -81,7 +87,7 @@ fun GameScreen(
                 containerColor = if (isDebugVisible)
                     MaterialTheme.colorScheme.secondary
                 else
-                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
                 modifier = Modifier.size(56.dp)
             ) {
                 Text(
@@ -97,7 +103,8 @@ fun GameScreen(
             onClick = onDisconnect,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp)
+                .padding(bottom = 48.dp) // Increased bottom padding
+                .navigationBarsPadding() // Add padding for navigation bar
                 .widthIn(min = 200.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFE63946),
@@ -124,32 +131,6 @@ fun GameScreen(
     }
 }
 
-/**
- * Displays the racket image based on player role.
- */
-@Composable
-private fun RacketDisplay(
-    playerRole: PlayerRole,
-    modifier: Modifier = Modifier
-) {
-    val racketResource = when (playerRole) {
-        PlayerRole.PLAYER1 -> Res.drawable.racket_red
-        PlayerRole.PLAYER2 -> Res.drawable.racket_black
-    }
-
-    Card(
-        modifier = modifier,
-        shape = CircleShape,
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
-    ) {
-        Image(
-            painter = painterResource(racketResource),
-            contentDescription = "${playerRole.displayName} Racket",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
 
 /**
  * Connection status badge showing player and connection state.
