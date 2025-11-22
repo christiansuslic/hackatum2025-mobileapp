@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import com.example.insanecrossmobilepingpongapp.controller.ControllerViewModel
 import com.example.insanecrossmobilepingpongapp.model.Screen
+import com.example.insanecrossmobilepingpongapp.sensor.MotionSensor
 import com.example.insanecrossmobilepingpongapp.sensor.createMotionSensor
 import com.example.insanecrossmobilepingpongapp.ui.DebugOverlay
 import com.example.insanecrossmobilepingpongapp.ui.GameScreen
@@ -13,10 +14,11 @@ import com.example.insanecrossmobilepingpongapp.ui.MenuScreen
 
 @Composable
 @Preview
-fun App() {
+fun App(
+    motionSensor: MotionSensor = remember { createMotionSensor() }
+) {
     MaterialTheme {
-        // Create motion sensor and view model
-        val motionSensor = remember { createMotionSensor() }
+        // Create view model with injected sensor
         val viewModel = remember { ControllerViewModel(motionSensor) }
 
         // Observe UI state
