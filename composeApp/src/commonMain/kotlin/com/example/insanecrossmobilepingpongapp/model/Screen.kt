@@ -19,6 +19,6 @@ sealed class Screen {
  * Player role selection.
  */
 enum class PlayerRole(val displayName: String, val token: String) {
-    PLAYER1("Player 1 (Bottom)", "player1"),
-    PLAYER2("Player 2 (Top)", "player2")
+    PLAYER1("Player 1", "player1"),
+    PLAYER2("Player 2", "player2")
 }
