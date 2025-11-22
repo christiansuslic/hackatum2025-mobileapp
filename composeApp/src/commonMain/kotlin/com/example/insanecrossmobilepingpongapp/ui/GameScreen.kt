@@ -4,9 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.insanecrossmobilepingpongapp.model.PlayerRole
 import com.example.insanecrossmobilepingpongapp.network.ConnectionState
 import org.jetbrains.compose.resources.painterResource
@@ -82,16 +81,16 @@ fun GameScreen(
             // Debug Toggle Button
             FloatingActionButton(
                 onClick = onToggleDebug,
-                containerColor = if (isDebugVisible) 
-                    MaterialTheme.colorScheme.secondary 
-                else 
+                containerColor = if (isDebugVisible)
+                    MaterialTheme.colorScheme.secondary
+                else
                     MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.size(56.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.BugReport,
-                    contentDescription = "Toggle Debug",
-                    tint = if (isDebugVisible) Color.White else Color.Gray
+                Text(
+                    text = if (isDebugVisible) "✕" else "🐞",
+                    fontSize = 24.sp,
+                    color = if (isDebugVisible) Color.White else Color.Gray
                 )
             }
         }
@@ -108,13 +107,17 @@ fun GameScreen(
                 contentColor = Color.White
             )
         ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
+            Text(
+                text = "✕",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Trennen")
+            Text(
+                text = "Trennen",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
         }
 
         // Debug Overlay
