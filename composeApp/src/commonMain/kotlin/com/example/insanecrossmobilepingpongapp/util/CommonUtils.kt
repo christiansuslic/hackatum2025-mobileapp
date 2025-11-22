@@ -13,3 +13,8 @@ expect fun formatFloat(value: Float, decimals: Int): String
 fun toDegrees(radians: Double): Double {
     return radians * 180.0 / PI
 }
+
+/**
+ * Get the current time in milliseconds.
+ */
+expect fun getCurrentTimeMillis(): Long

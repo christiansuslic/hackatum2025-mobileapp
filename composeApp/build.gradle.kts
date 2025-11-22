@@ -23,6 +23,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+            freeCompilerArgs += listOf("-Xbinary=bundleId=com.example.insanecrossmobilepingpongapp")
         }
     }
 
@@ -34,6 +35,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.kotlinx.datetime)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

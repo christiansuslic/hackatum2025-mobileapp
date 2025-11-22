@@ -2,6 +2,7 @@ package com.example.insanecrossmobilepingpongapp.controller
 
 import com.example.insanecrossmobilepingpongapp.model.PaddleControl
 import com.example.insanecrossmobilepingpongapp.util.Log
+import com.example.insanecrossmobilepingpongapp.util.formatFloat
 
 /**
  * Swing detection configuration.
@@ -53,9 +54,7 @@ class SwingDetector {
 
             // Log candidate movement below threshold
             if (consecutiveHighSpeedCount == 1) {
-                Log.d(TAG, "🔍 Swing candidate – speed=%.2f (>= %.2f), confirming...".format(
-                    control.swingSpeed, SwingDetectionConfig.SWING_SPEED_THRESHOLD
-                ))
+                Log.d(TAG, "🔍 Swing candidate – speed=${formatFloat(control.swingSpeed, 2)} (>= ${formatFloat(SwingDetectionConfig.SWING_SPEED_THRESHOLD, 2)}), confirming...")
             }
 
             // Require multiple consecutive frames to confirm (reduces noise)
@@ -64,21 +63,14 @@ class SwingDetector {
                 lastSwingTimestamp = currentTimeMs
                 consecutiveHighSpeedCount = 0
 
-                Log.i(TAG, "🏓 Swing detected! speed=%.2f dirX=%.2f dirY=%.2f intensity=%.2f".format(
-                    control.swingSpeed,
-                    control.swingDirectionX,
-                    control.swingDirectionY,
-                    control.intensity
-                ))
+                Log.i(TAG, "🏓 Swing detected! speed=${formatFloat(control.swingSpeed, 2)} dirX=${formatFloat(control.swingDirectionX, 2)} dirY=${formatFloat(control.swingDirectionY, 2)} intensity=${formatFloat(control.intensity, 2)}")
 
                 return true
             }
         } else {
             // Speed below threshold
             if (consecutiveHighSpeedCount > 0) {
-                Log.d(TAG, "💤 No swing – speed=%.2f (< %.2f), resetting counter".format(
-                    control.swingSpeed, SwingDetectionConfig.SWING_SPEED_THRESHOLD
-                ))
+                Log.d(TAG, "💤 No swing – speed=${formatFloat(control.swingSpeed, 2)} (< ${formatFloat(SwingDetectionConfig.SWING_SPEED_THRESHOLD, 2)}), resetting counter")
             }
             consecutiveHighSpeedCount = 0
         }

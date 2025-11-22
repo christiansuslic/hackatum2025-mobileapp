@@ -8,14 +8,17 @@ import com.example.insanecrossmobilepingpongapp.model.PaddleControl
 import com.example.insanecrossmobilepingpongapp.network.WebSocketClient
 import com.example.insanecrossmobilepingpongapp.sensor.MotionSensor
 import com.example.insanecrossmobilepingpongapp.util.Log
+import com.example.insanecrossmobilepingpongapp.util.formatFloat
+import com.example.insanecrossmobilepingpongapp.util.toDegrees
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import kotlin.math.abs
+import kotlin.math.PI
 import kotlin.math.sqrt
+import com.example.insanecrossmobilepingpongapp.util.getCurrentTimeMillis
 
 /**
  * ViewModel for managing controller state and processing motion sensor data.
@@ -42,10 +45,7 @@ class ControllerViewModel(
     init {
         Log.i(TAG, "🎮 ControllerViewModel initializing...")
         Log.i(TAG, "📡 Motion sensor available: ${motionSensor.isAvailable()}")
-        Log.i(TAG, "⚙️ Swing detection config: threshold=%.2f, minInterval=%dms".format(
-            SwingDetectionConfig.SWING_SPEED_THRESHOLD,
-            SwingDetectionConfig.SWING_MIN_INTERVAL_MS
-        ))
+        Log.i(TAG, "⚙️ Swing detection config: threshold=${formatFloat(SwingDetectionConfig.SWING_SPEED_THRESHOLD, 2)}, minInterval=${SwingDetectionConfig.SWING_MIN_INTERVAL_MS}ms")
 
         // Observe WebSocket connection state
         viewModelScope.launch {
@@ -91,18 +91,12 @@ class ControllerViewModel(
         // Periodic logging of motion data (not too spammy)
         processCount++
         if (processCount % logEveryNProcesses == 0) {
-            Log.d(TAG, "📊 Motion → pitch: %.1f°, roll: %.1f°, accelMag: %.2f m/s²".format(
-                Math.toDegrees(calibratedOrientation.pitch.toDouble()),
-                Math.toDegrees(calibratedOrientation.roll.toDouble()),
-                kotlin.math.sqrt(
-                    calibratedOrientation.accelerationX * calibratedOrientation.accelerationX +
-                    calibratedOrientation.accelerationY * calibratedOrientation.accelerationY +
-                    calibratedOrientation.accelerationZ * calibratedOrientation.accelerationZ
-                )
-            ))
-            Log.d(TAG, "🎯 Control → tiltX: %.2f, tiltY: %.2f, intensity: %.2f, swingSpeed: %.2f".format(
-                paddleControl.tiltX, paddleControl.tiltY, paddleControl.intensity, paddleControl.swingSpeed
-            ))
+            Log.d(TAG, "📊 Motion → pitch: ${formatFloat(toDegrees(calibratedOrientation.pitch.toDouble()).toFloat(), 1)}°, roll: ${formatFloat(toDegrees(calibratedOrientation.roll.toDouble()).toFloat(), 1)}°, accelMag: ${formatFloat(sqrt(
+                calibratedOrientation.accelerationX * calibratedOrientation.accelerationX +
+                calibratedOrientation.accelerationY * calibratedOrientation.accelerationY +
+                calibratedOrientation.accelerationZ * calibratedOrientation.accelerationZ
+            ), 2)} m/s²")
+            Log.d(TAG, "🎯 Control → tiltX: ${formatFloat(paddleControl.tiltX, 2)}, tiltY: ${formatFloat(paddleControl.tiltY, 2)}, intensity: ${formatFloat(paddleControl.intensity, 2)}, swingSpeed: ${formatFloat(paddleControl.swingSpeed, 2)}")
         }
 
         // ALWAYS update UI state (continuous)
@@ -121,11 +115,13 @@ class ControllerViewModel(
         lastOrientation = smoothedOrientation
     }
 
+
+
     /**
      * Get current time in milliseconds (platform-agnostic).
      */
     private fun getCurrentTimeMillis(): Long {
-        return Clock.System.now().toEpochMilliseconds()
+        return com.example.insanecrossmobilepingpongapp.util.getCurrentTimeMillis()
     }
 
     /**
@@ -169,7 +165,7 @@ class ControllerViewModel(
      */
     private fun mapToPaddleControl(orientation: DeviceOrientation): PaddleControl {
         // Maximum tilt angles in radians (about ±45 degrees)
-        val maxTiltAngle = Math.PI.toFloat() / 4
+        val maxTiltAngle = (PI / 4).toFloat()
 
         // Map roll to tiltX (left/right)
         val tiltX = (orientation.roll / maxTiltAngle).coerceIn(-1f, 1f)
@@ -220,11 +216,7 @@ class ControllerViewModel(
     fun calibrate() {
         val currentOrientation = lastOrientation
         Log.i(TAG, "🎚️ Calibrating controller...")
-        Log.d(TAG, "📐 Calibration offset → pitch: %.3f°, roll: %.3f°, yaw: %.3f°".format(
-            Math.toDegrees(currentOrientation.pitch.toDouble()),
-            Math.toDegrees(currentOrientation.roll.toDouble()),
-            Math.toDegrees(currentOrientation.yaw.toDouble())
-        ))
+        Log.d(TAG, "📐 Calibration offset → pitch: ${formatFloat(toDegrees(currentOrientation.pitch.toDouble()).toFloat(), 3)}°, roll: ${formatFloat(toDegrees(currentOrientation.roll.toDouble()).toFloat(), 3)}°, yaw: ${formatFloat(toDegrees(currentOrientation.yaw.toDouble()).toFloat(), 3)}°")
         _state.update { currentState ->
             currentState.copy(
                 calibrationOffset = currentOrientation,

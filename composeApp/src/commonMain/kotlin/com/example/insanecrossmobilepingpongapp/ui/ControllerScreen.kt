@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.insanecrossmobilepingpongapp.controller.ControllerViewModel
 import com.example.insanecrossmobilepingpongapp.network.ConnectionState
+import com.example.insanecrossmobilepingpongapp.util.formatFloat
 import kotlin.math.abs
 
 @Composable
@@ -483,7 +484,7 @@ private fun ValueRow(label: String, value: Float) {
             )
             // Numeric value
             Text(
-                text = String.format("%+.2f", value),
+                text = formatFloat(value, 2),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

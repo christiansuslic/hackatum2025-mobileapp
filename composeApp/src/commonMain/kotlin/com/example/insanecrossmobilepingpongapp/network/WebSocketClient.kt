@@ -2,6 +2,7 @@ package com.example.insanecrossmobilepingpongapp.network
 
 import com.example.insanecrossmobilepingpongapp.model.SwingEvent
 import com.example.insanecrossmobilepingpongapp.util.Log
+import com.example.insanecrossmobilepingpongapp.util.formatFloat
 import io.ktor.client.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.serialization.kotlinx.*
@@ -123,7 +124,7 @@ class WebSocketClient {
                 currentSession.send(Frame.Text(json))
 
                 // Log the swing send event
-                Log.i(TAG, "🏓 Sending swing event → speed=%.2f".format(swingSpeed))
+                Log.i(TAG, "🏓 Sending swing event → speed=${formatFloat(swingSpeed, 2)}")
                 Log.d(TAG, "📦 Payload: $json")
             } catch (e: Exception) {
                 Log.e(TAG, "❌ Failed to send swing event: ${e.message}", e)
