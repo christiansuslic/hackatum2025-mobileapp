@@ -12,6 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -39,6 +42,9 @@ class WebSocketClient {
 
     private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
     val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+
+    private val _incomingMessages = MutableSharedFlow<String>()
+    val incomingMessages: SharedFlow<String> = _incomingMessages.asSharedFlow()
 
     private var session: DefaultClientWebSocketSession? = null
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -76,6 +82,7 @@ class WebSocketClient {
                                 is Frame.Text -> {
                                     val text = frame.readText()
                                     Log.d(TAG, "📨 Received: $text")
+                                    _incomingMessages.emit(text)
                                 }
                                 is Frame.Close -> {
                                     val reason = frame.readReason()

@@ -71,6 +71,23 @@ class ControllerViewModel(
             }
         }
 
+        // Observe incoming messages for "hit" sound
+        viewModelScope.launch {
+            webSocketClient.incomingMessages.collect { message ->
+                try {
+                    val soundMessage = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+                        .decodeFromString<com.example.insanecrossmobilepingpongapp.model.SoundMessage>(message)
+                    
+                    if (soundMessage.type == "sound" && soundMessage.sound == "hit") {
+                        Log.i(TAG, "🔊 Hit message received! Playing sound.")
+                        soundPlayer.playHitSound()
+                    }
+                } catch (e: Exception) {
+                    // Ignore parsing errors (might be other message types)
+                }
+            }
+        }
+
         if (motionSensor.isAvailable()) {
             startListening()
         } else {
