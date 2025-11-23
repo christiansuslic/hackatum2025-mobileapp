@@ -21,6 +21,8 @@ import org.jetbrains.compose.resources.painterResource
 import insanecrossmobilepingpongapp.composeapp.generated.resources.Res
 import insanecrossmobilepingpongapp.composeapp.generated.resources.racket_black
 import insanecrossmobilepingpongapp.composeapp.generated.resources.racket_red
+import org.jetbrains.compose.resources.stringResource
+import insanecrossmobilepingpongapp.composeapp.generated.resources.*
 
 /**
  * Game screen showing the racket view and connection status.
@@ -129,7 +131,7 @@ fun GameScreen(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Disconnect",
+                text = stringResource(Res.string.disconnect_button),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -154,10 +156,10 @@ private fun ConnectionStatusBadge(
     modifier: Modifier = Modifier
 ) {
     val (statusText, statusColor) = when (connectionState) {
-        ConnectionState.CONNECTED -> "Connected" to Color(0xFF06D6A0)
-        ConnectionState.CONNECTING -> "Connecting..." to Color(0xFFFFA500)
-        ConnectionState.DISCONNECTED -> "Disconnected" to Color(0xFF888888)
-        ConnectionState.ERROR -> "Error" to Color(0xFFE63946)
+        ConnectionState.CONNECTED -> stringResource(Res.string.connected) to Color(0xFF06D6A0)
+        ConnectionState.CONNECTING -> stringResource(Res.string.connecting) to Color(0xFFFFA500)
+        ConnectionState.DISCONNECTED -> stringResource(Res.string.disconnected) to Color(0xFF888888)
+        ConnectionState.ERROR -> stringResource(Res.string.error) to Color(0xFFE63946)
     }
 
     val containerColor = if (isDarkTheme) Color(0xFF2A2A3E) else Color.White

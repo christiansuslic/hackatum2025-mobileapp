@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.insanecrossmobilepingpongapp.model.PlayerRole
+import org.jetbrains.compose.resources.stringResource
+import insanecrossmobilepingpongapp.composeapp.generated.resources.*
 
 @Composable
 fun WaitingScreen(
@@ -56,7 +58,7 @@ fun WaitingScreen(
                     .fillMaxWidth()
             ) {
                 Text(
-                    "You are Player $playerNumber",
+                    stringResource(Res.string.you_are_player, playerNumber),
                     fontSize = 20.sp,
                     color = playerColor,
                     fontWeight = FontWeight.Bold
@@ -65,7 +67,7 @@ fun WaitingScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 
                 Text(
-                    "Waiting for second player...",
+                    stringResource(Res.string.waiting_for_second_player),
                     fontSize = 16.sp,
                     color = textColor
                 )

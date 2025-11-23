@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.insanecrossmobilepingpongapp.model.PlayerRole
+import org.jetbrains.compose.resources.stringResource
+import insanecrossmobilepingpongapp.composeapp.generated.resources.*
 
 /**
  * Start menu screen where users select their player role.
@@ -77,7 +79,7 @@ fun MenuScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Ping Pong Online",
+                    text = stringResource(Res.string.app_name),
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold,
@@ -87,7 +89,7 @@ fun MenuScreen(
                 )
                 
                 Text(
-                    text = "Choose your player",
+                    text = stringResource(Res.string.choose_player),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
                         color = subTextColor
@@ -105,14 +107,14 @@ fun MenuScreen(
             ) {
                 // Player 1 Button (Red)
                 PlayerButton(
-                    text = "Player 1",
+                    text = stringResource(Res.string.player_1),
                     color = Color(0xFFE63946),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER1) }
                 )
 
                 // Player 2 Button (Green)
                 PlayerButton(
-                    text = "Player 2",
+                    text = stringResource(Res.string.player_2),
                     color = Color(0xFF06D6A0),
                     onClick = { onPlayerSelected(PlayerRole.PLAYER2) }
                 )
@@ -122,7 +124,7 @@ fun MenuScreen(
 
             // Info Text
             Text(
-                text = "Note: The game starts automatically\nonce both players are connected.",
+                text = stringResource(Res.string.game_start_note),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = if (isDarkTheme) Color(0xFF888888) else Color(0xFF627D98),
                     fontSize = 14.sp
