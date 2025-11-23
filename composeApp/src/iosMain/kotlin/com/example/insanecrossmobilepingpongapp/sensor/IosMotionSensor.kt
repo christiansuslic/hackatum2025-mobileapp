@@ -51,26 +51,28 @@ class IosMotionSensor : MotionSensor {
                     Triple(x, y, z)
                 }
 
+                // Convert G-force to m/s² (1G ≈ 9.81 m/s²)
+                val gravity = 9.81f
                 val deviceOrientation = DeviceOrientation(
                     pitch = attitude.pitch.toFloat(),
                     roll = attitude.roll.toFloat(),
                     yaw = attitude.yaw.toFloat(),
-                    accelerationX = accelX.toFloat(),
-                    accelerationY = accelY.toFloat(),
-                    accelerationZ = accelZ.toFloat()
+                    accelerationX = (accelX * gravity).toFloat(),
+                    accelerationY = (accelY * gravity).toFloat(),
+                    accelerationZ = (accelZ * gravity).toFloat()
                 )
 
                 // Periodic detailed logging
                 updateCount++
                 if (updateCount % logEveryNUpdates == 0) {
                     val accelMagnitude = sqrt(
-                        accelX * accelX +
-                        accelY * accelY +
-                        accelZ * accelZ
+                        (accelX * gravity) * (accelX * gravity) +
+                        (accelY * gravity) * (accelY * gravity) +
+                        (accelZ * gravity) * (accelZ * gravity)
                     ).toFloat()
 
                     Log.d(TAG, "📊 Orientation → pitch: ${formatFloat(toDegrees(attitude.pitch).toFloat(), 3)}, roll: ${formatFloat(toDegrees(attitude.roll).toFloat(), 3)}, yaw: ${formatFloat(toDegrees(attitude.yaw).toFloat(), 3)}")
-                    Log.d(TAG, "🚀 Acceleration → X: ${formatFloat(accelX.toFloat(), 2)}, Y: ${formatFloat(accelY.toFloat(), 2)}, Z: ${formatFloat(accelZ.toFloat(), 2)}, |mag|: ${formatFloat(accelMagnitude, 2)} m/s²")
+                    Log.d(TAG, "🚀 Acceleration → X: ${formatFloat((accelX * gravity).toFloat(), 2)}, Y: ${formatFloat((accelY * gravity).toFloat(), 2)}, Z: ${formatFloat((accelZ * gravity).toFloat(), 2)}, |mag|: ${formatFloat(accelMagnitude, 2)} m/s²")
                 }
 
                 trySend(deviceOrientation)
