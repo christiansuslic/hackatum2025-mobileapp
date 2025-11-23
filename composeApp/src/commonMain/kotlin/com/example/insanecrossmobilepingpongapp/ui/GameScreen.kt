@@ -33,6 +33,7 @@ fun GameScreen(
     onToggleDebug: () -> Unit,
     onDisconnect: () -> Unit,
     debugContent: @Composable () -> Unit,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     // Determine racket resource based on player role
@@ -41,17 +42,26 @@ fun GameScreen(
         PlayerRole.PLAYER2 -> Res.drawable.racket_black
     }
 
+    val backgroundBrush = if (isDarkTheme) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF1A1A2E),
+                Color(0xFF16213E)
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFFF0F4F8),
+                Color(0xFFD9E2EC)
+            )
+        )
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A1A2E),
-                        Color(0xFF16213E)
-                    )
-                )
-            )
+            .background(backgroundBrush)
     ) {
         Image(
             painter = painterResource(racketResource),
@@ -67,6 +77,7 @@ fun GameScreen(
         ConnectionStatusBadge(
             connectionState = connectionState,
             playerRole = playerRole,
+            isDarkTheme = isDarkTheme,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
@@ -139,6 +150,7 @@ fun GameScreen(
 private fun ConnectionStatusBadge(
     connectionState: ConnectionState,
     playerRole: PlayerRole,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     val (statusText, statusColor) = when (connectionState) {
@@ -148,9 +160,12 @@ private fun ConnectionStatusBadge(
         ConnectionState.ERROR -> "Error" to Color(0xFFE63946)
     }
 
+    val containerColor = if (isDarkTheme) Color(0xFF2A2A3E) else Color.White
+    val textColor = if (isDarkTheme) Color.White else Color.Black
+
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2A2A3E)
+            containerColor = containerColor
         ),
         modifier = modifier
     ) {
@@ -161,7 +176,7 @@ private fun ConnectionStatusBadge(
             Text(
                 text = playerRole.displayName,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.White
+                color = textColor
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,

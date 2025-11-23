@@ -18,7 +18,17 @@ import com.example.insanecrossmobilepingpongapp.ui.WaitingScreen
 fun App(
     motionSensor: MotionSensor = remember { createMotionSensor() }
 ) {
-    MaterialTheme {
+    // Theme state
+    var isDarkTheme by remember { mutableStateOf(true) }
+
+    // Define colors based on theme
+    val colorScheme = if (isDarkTheme) {
+        androidx.compose.material3.darkColorScheme()
+    } else {
+        androidx.compose.material3.lightColorScheme()
+    }
+
+    MaterialTheme(colorScheme = colorScheme) {
         // Create view model with injected sensor
         val viewModel = remember { ControllerViewModel(motionSensor) }
 
@@ -31,13 +41,18 @@ fun App(
                 MenuScreen(
                     onPlayerSelected = { playerRole ->
                         viewModel.selectPlayer(playerRole)
-                    }
+                    },
+                    isDarkTheme = isDarkTheme,
+                    onThemeToggle = { isDarkTheme = it }
                 )
             }
 
             Screen.Waiting -> {
                 state.playerRole?.let { playerRole ->
-                    WaitingScreen(playerRole = playerRole)
+                    WaitingScreen(
+                        playerRole = playerRole,
+                        isDarkTheme = isDarkTheme
+                    )
                 }
             }
 
@@ -60,7 +75,8 @@ fun App(
                                 onCalibrate = { viewModel.calibrate() },
                                 onClose = { viewModel.toggleDebug() }
                             )
-                        }
+                        },
+                        isDarkTheme = isDarkTheme
                     )
                 }
             }

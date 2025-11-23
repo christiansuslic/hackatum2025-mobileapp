@@ -21,21 +21,49 @@ import com.example.insanecrossmobilepingpongapp.model.PlayerRole
 @Composable
 fun MenuScreen(
     onPlayerSelected: (PlayerRole) -> Unit,
+    isDarkTheme: Boolean,
+    onThemeToggle: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor = if (isDarkTheme) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF1A1A2E),
+                Color(0xFF0F0F1E)
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFFF0F4F8),
+                Color(0xFFD9E2EC)
+            )
+        )
+    }
+
+    val textColor = if (isDarkTheme) Color.White else Color(0xFF102A43)
+    val subTextColor = if (isDarkTheme) Color(0xFFBBBBBB) else Color(0xFF486581)
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF1A1A2E),
-                        Color(0xFF0F0F1E)
-                    )
-                )
-            ),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
+        // Theme Toggle
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        ) {
+            IconButton(onClick = { onThemeToggle(!isDarkTheme) }) {
+                Text(
+                    text = if (isDarkTheme) "☀️" else "🌙",
+                    fontSize = 24.sp
+                )
+            }
+        }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -53,7 +81,7 @@ fun MenuScreen(
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = textColor
                     ),
                     textAlign = TextAlign.Center
                 )
@@ -62,7 +90,7 @@ fun MenuScreen(
                     text = "Choose your player",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = 20.sp,
-                        color = Color(0xFFBBBBBB)
+                        color = subTextColor
                     ),
                     textAlign = TextAlign.Center
                 )
@@ -96,7 +124,7 @@ fun MenuScreen(
             Text(
                 text = "Note: The game starts automatically\nonce both players are connected.",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFF888888),
+                    color = if (isDarkTheme) Color(0xFF888888) else Color(0xFF627D98),
                     fontSize = 14.sp
                 ),
                 textAlign = TextAlign.Center,

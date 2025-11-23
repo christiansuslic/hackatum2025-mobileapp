@@ -17,7 +17,10 @@ import androidx.compose.ui.unit.sp
 import com.example.insanecrossmobilepingpongapp.model.PlayerRole
 
 @Composable
-fun WaitingScreen(playerRole: PlayerRole) {
+fun WaitingScreen(
+    playerRole: PlayerRole,
+    isDarkTheme: Boolean
+) {
     val playerNumber = if (playerRole == PlayerRole.PLAYER1) 1 else 2
     
     val playerColor = when (playerNumber) {
@@ -26,10 +29,14 @@ fun WaitingScreen(playerRole: PlayerRole) {
         else -> Color.White
     }
 
+    val backgroundColor = if (isDarkTheme) Color(0xFF222222) else Color(0xFFF0F4F8)
+    val cardColor = if (isDarkTheme) Color(0xFF333333) else Color.White
+    val textColor = if (isDarkTheme) Color.White else Color.Black
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF222222)),
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Card(
@@ -38,7 +45,7 @@ fun WaitingScreen(playerRole: PlayerRole) {
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF333333)
+                containerColor = cardColor
             )
         ) {
             Column(
@@ -60,7 +67,7 @@ fun WaitingScreen(playerRole: PlayerRole) {
                 Text(
                     "Waiting for second player...",
                     fontSize = 16.sp,
-                    color = Color.White
+                    color = textColor
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
