@@ -50,7 +50,19 @@ class ControllerViewModel(
         // Observe WebSocket connection state
         viewModelScope.launch {
             webSocketClient.connectionState.collect { connectionState ->
-                _state.update { it.copy(connectionState = connectionState) }
+                _state.update { currentState ->
+                    var nextScreen = currentState.currentScreen
+                    // Auto-transition to Game if we are in Waiting and connection is established
+                    if (connectionState == com.example.insanecrossmobilepingpongapp.network.ConnectionState.CONNECTED && 
+                        currentState.currentScreen == com.example.insanecrossmobilepingpongapp.model.Screen.Waiting) {
+                        nextScreen = com.example.insanecrossmobilepingpongapp.model.Screen.Game
+                    }
+                    
+                    currentState.copy(
+                        connectionState = connectionState,
+                        currentScreen = nextScreen
+                    ) 
+                }
             }
         }
 
@@ -281,7 +293,7 @@ class ControllerViewModel(
             it.copy(
                 playerRole = role,
                 token = role.token,
-                currentScreen = com.example.insanecrossmobilepingpongapp.model.Screen.Game
+                currentScreen = com.example.insanecrossmobilepingpongapp.model.Screen.Waiting
             )
         }
         // Auto-connect to server with player's token

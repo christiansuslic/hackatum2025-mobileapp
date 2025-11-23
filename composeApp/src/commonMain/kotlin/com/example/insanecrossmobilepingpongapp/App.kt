@@ -11,6 +11,7 @@ import com.example.insanecrossmobilepingpongapp.sensor.createMotionSensor
 import com.example.insanecrossmobilepingpongapp.ui.DebugOverlay
 import com.example.insanecrossmobilepingpongapp.ui.GameScreen
 import com.example.insanecrossmobilepingpongapp.ui.MenuScreen
+import com.example.insanecrossmobilepingpongapp.ui.WaitingScreen
 
 @Composable
 @Preview
@@ -32,6 +33,12 @@ fun App(
                         viewModel.selectPlayer(playerRole)
                     }
                 )
+            }
+
+            Screen.Waiting -> {
+                state.playerRole?.let { playerRole ->
+                    WaitingScreen(playerRole = playerRole)
+                }
             }
 
             Screen.Game -> {

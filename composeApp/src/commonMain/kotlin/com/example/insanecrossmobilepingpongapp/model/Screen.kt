@@ -10,6 +10,11 @@ sealed class Screen {
     data object Menu : Screen()
     
     /**
+     * Waiting screen until all players join.
+     */
+    data object Waiting : Screen()
+
+    /**
      * Game screen with racket view and motion control.
      */
     data object Game : Screen()
