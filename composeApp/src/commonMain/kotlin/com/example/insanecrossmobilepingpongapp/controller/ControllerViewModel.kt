@@ -33,6 +33,7 @@ class ControllerViewModel(
     private val webSocketClient = WebSocketClient()
     private val swingDetector = SwingDetector()
     private val soundPlayer = com.example.insanecrossmobilepingpongapp.util.SoundPlayer()
+    private val vibrator = com.example.insanecrossmobilepingpongapp.util.Vibrator()
 
     // Smoothing parameters
     private val smoothingFactor = 0.8f // Higher = more smoothing
@@ -79,8 +80,9 @@ class ControllerViewModel(
                         .decodeFromString<com.example.insanecrossmobilepingpongapp.model.SoundMessage>(message)
                     
                     if (soundMessage.type == "sound" && soundMessage.sound == "hit") {
-                        Log.i(TAG, "🔊 Hit message received! Playing sound.")
+                        Log.i(TAG, "🔊 Hit message received! Playing sound and vibrating.")
                         soundPlayer.playHitSound()
+                        vibrator.vibrate(200)
                     }
                 } catch (e: Exception) {
                     // Ignore parsing errors (might be other message types)
