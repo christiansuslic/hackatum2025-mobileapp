@@ -32,11 +32,16 @@ class ControllerViewModel(
 
     private val webSocketClient = WebSocketClient()
     private val swingDetector = SwingDetector()
+    private val soundPlayer = com.example.insanecrossmobilepingpongapp.util.SoundPlayer()
 
     // Smoothing parameters
     private val smoothingFactor = 0.8f // Higher = more smoothing
     private val accelSmoothingFactor = 0.7f // Smoothing for acceleration
     private var lastOrientation = DeviceOrientation()
+    
+    // Sound cooldown
+    private var lastSoundTime = 0L
+    private val SOUND_COOLDOWN_MS = 500L // Cooldown between sounds
 
     // Logging control - for periodic motion data logs
     private var processCount = 0
@@ -121,6 +126,12 @@ class ControllerViewModel(
         if (swingDetector.detectSwing(paddleControl, currentTime)) {
             // Swing detected! Send minimal swing event with just speed
             webSocketClient.sendSwingEvent(paddleControl.swingSpeed)
+            
+            // Play feedback sound with cooldown
+            if (currentTime - lastSoundTime >= SOUND_COOLDOWN_MS) {
+                soundPlayer.playSwingSound()
+                lastSoundTime = currentTime
+            }
         }
 
         // Store for next smoothing iteration

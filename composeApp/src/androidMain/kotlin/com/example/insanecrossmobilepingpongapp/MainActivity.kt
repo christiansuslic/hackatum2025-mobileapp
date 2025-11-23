@@ -6,15 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 
 import com.example.insanecrossmobilepingpongapp.sensor.AndroidMotionSensor
+import com.example.insanecrossmobilepingpongapp.util.ContextProvider
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        ContextProvider.init(this)
 
         setContent {
-            // Pass the Android-specific sensor implementation with Context
-            App(motionSensor = AndroidMotionSensor(this))
+            App()
         }
     }
 }

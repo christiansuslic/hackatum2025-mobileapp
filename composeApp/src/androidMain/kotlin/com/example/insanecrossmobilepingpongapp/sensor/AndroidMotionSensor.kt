@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.example.insanecrossmobilepingpongapp.model.DeviceOrientation
 import com.example.insanecrossmobilepingpongapp.util.Log
+import com.example.insanecrossmobilepingpongapp.util.ContextProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -167,6 +168,7 @@ class AndroidMotionSensor(private val context: Context) : MotionSensor {
     }
 }
 
+
 actual fun createMotionSensor(): MotionSensor {
-    throw IllegalStateException("Context required for Android. Use AndroidMotionSensor(context) directly.")
+    return AndroidMotionSensor(ContextProvider.getContext())
 }
